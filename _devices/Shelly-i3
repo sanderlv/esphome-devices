@@ -1,0 +1,92 @@
+# Use at you own supervision and on your own risk
+
+substitutions:
+  devicename: shelly_i3_01
+
+  ssid: <ssid>
+  password: !secret wifi_key
+
+esphome:
+  name: ${devicename}
+  platform: ESP8266
+  board: esp01_1m
+
+wifi:
+  ssid: "ssid"
+  password: !secret wifi_key
+  domain: !secret domain
+  # use_address: 192.168.x.x
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${devicename} Fallback Hotspot"
+    password: !secret Fallback_Hotspot
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+web_server:
+  port: 80
+
+time:
+  - platform: sntp
+    id: my_time
+    
+sensor:
+  - platform: wifi_signal
+    name: "${devicename} - WiFi Signal"
+    update_interval: 6s
+  
+  - platform: uptime
+    name: "${devicename} - Uptime"
+    icon: mdi:clock-outline
+    update_interval: 60s
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO12
+      mode: INPUT
+    name: ${devicename} Input 1
+    id: sensorid1
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      then:
+        - switch.toggle: switchid1
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT
+    name: ${devicename} Input 2
+    id: sensorid2
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      then:
+        - switch.toggle: switchid2
+  - platform: gpio
+    pin:
+      number: GPIO13
+      mode: INPUT
+    name: ${devicename} Input 3
+    id: sensorid3
+    filters:
+      - delayed_on_off: 50ms
+      
+switch:
+  - platform: template
+    id: switchid1
+    name: "${devicename} Switch 1"
+    optimistic: true
+    
+  - platform: template
+    id: switchid2
+    name: "${devicename} Switch 2"
+    optimistic: true
